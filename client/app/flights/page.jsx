@@ -5,6 +5,7 @@ import 'jspdf-autotable';
 
 export default function Flights() {
   const [flights, setFlights] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -44,10 +45,14 @@ export default function Flights() {
     doc.save('flights.pdf');
   };
 
+  const filteredFlights = flights.filter(flight =>
+    flight.destination.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white min-h-screen flex flex-col p-6">
       <header className="bg-gradient-to-r from-teal-600 to-blue-700 p-6 rounded-lg shadow-lg mb-8">
-        <h1 className="text-4xl font-bold text-center"> Available Flights</h1>
+        <h1 className="text-4xl font-bold text-center">Available Flights</h1>
       </header>
       <main className="flex-grow">
         {error && <p className="text-red-400 mb-4 text-center">{error}</p>}
@@ -60,6 +65,15 @@ export default function Flights() {
             >
               Export to PDF
             </button>
+          </div>
+          <div className="p-4 flex justify-center">
+            <input
+              type="text"
+              placeholder="Search by destination..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full max-w-xs p-2 bg-gray-800 border border-gray-700 rounded-md text-gray-300 placeholder-gray-500"
+            />
           </div>
           <table className="w-full text-gray-300">
             <thead>
@@ -74,7 +88,7 @@ export default function Flights() {
               </tr>
             </thead>
             <tbody>
-              {flights.map((flight) => (
+              {filteredFlights.map((flight) => (
                 <tr key={flight._id} className="border-b border-gray-700 hover:bg-gray-800 transition">
                   <td className="p-4">{flight.flightNumber}</td>
                   <td className="p-4">{flight.origin}</td>
